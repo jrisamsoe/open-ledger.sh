@@ -1,37 +1,61 @@
 #!/bin/bash
 
-echo "==============================="
-echo "     Universitas Pemulung Kripto"
-echo "         by admin NIERA"
-echo "==============================="
+# Tampilkan header
+echo "====================================="
+echo "     UNIVERSITAS PEMULUNG KRIPTO     "
+echo "====================================="
+echo "             by: Admin NIERA         "
+echo
 
-FILE_URL="https://cdn.openledger.xyz/openledger-node-1.0.0-linux.zip"
-FILE_NAME="openledger-node-1.0.0-linux.zip"
-EXTRACT_DIR="openledger-node-1.0.0-linux"
-
-if [ ! -f "$FILE_NAME" ]; then
-    echo "Mengunduh file dari $FILE_URL..."
-    wget "$FILE_URL"
-else
-    echo "File sudah diunduh: $FILE_NAME"
-fi
-
-if [ ! -d "$EXTRACT_DIR" ]; then
-    echo "Mengekstrak file ZIP..."
-    unzip "$FILE_NAME"
-else
-    echo "File sudah diekstrak: $EXTRACT_DIR"
-fi
-
-cd "$EXTRACT_DIR" || exit 1
-
-for BIN_FILE in *; do
-    if [ -x "$BIN_FILE" ] && [ ! -d "$BIN_FILE" ]; then
-        echo "Menjalankan program: $BIN_FILE"
-        chmod +x "$BIN_FILE"
-        ./"$BIN_FILE"
-        exit 0
+# Pastikan 'unzip' sudah diinstal
+echo "Memeriksa apakah 'unzip' tersedia..."
+if ! command -v unzip &> /dev/null; then
+    echo "'unzip' tidak ditemukan. Menginstal unzip..."
+    if [[ $(id -u) -ne 0 ]]; then
+        echo "Silakan jalankan skrip ini dengan sudo atau sebagai root untuk menginstal unzip."
+        exit 1
     fi
-done
+    # Instal unzip berdasarkan OS
+    if [[ -f /etc/debian_version ]]; then
+        sudo apt update && sudo apt install -y unzip
+    elif [[ -f /etc/redhat-release ]]; then
+        sudo yum install -y unzip
+    else
+        echo "Distribusi Linux tidak dikenal. Instal 'unzip' secara manual, lalu jalankan ulang skrip ini."
+        exit 1
+    fi
+fi
 
-echo "Tidak ditemukan file biner yang bisa dijalankan!"
+echo "'unzip' ditemukan atau berhasil diinstal."
+echo
+
+# Download file
+DOWNLOAD_URL="https://cdn.openledger.xyz/openledger-node-1.0.0-linux.zip"
+FILE_NAME="openledger-node-1.0.0-linux.zip"
+
+echo "Mendownload file dari $DOWNLOAD_URL..."
+wget -q --show-progress "$DOWNLOAD_URL" -O "$FILE_NAME"
+
+if [[ $? -ne 0 ]]; then
+    echo "Gagal mendownload file. Periksa koneksi internet Anda."
+    exit 1
+fi
+
+echo "File berhasil didownload: $FILE_NAME"
+echo
+
+# Ekstrak file
+echo "Menyiapkan ekstraksi file..."
+unzip -o "$FILE_NAME" -d openledger-node
+
+if [[ $? -ne 0 ]]; then
+    echo "Gagal mengekstrak file. Pastikan file ZIP tidak rusak."
+    exit 1
+fi
+
+echo "File berhasil diekstrak ke folder 'openledger-node'."
+echo
+echo "====================================="
+echo "         INSTALASI SELESAI!          "
+echo "====================================="
+echo "File berhasil diunduh dan diekstrak."
