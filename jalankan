@@ -19,7 +19,11 @@ if ! command -v unzip &> /dev/null; then
     if [[ -f /etc/debian_version ]]; then
         sudo apt update && sudo apt install -y unzip
     elif [[ -f /etc/redhat-release ]]; then
-        sudo yum install -y unzip
+        sudo yum install -y unzip   # Untuk CentOS/RedHat
+    elif [[ -f /etc/arch-release ]]; then
+        sudo pacman -S --noconfirm unzip   # Untuk Arch Linux
+    elif [[ -f /etc/alpine-release ]]; then
+        sudo apk add unzip  # Untuk Alpine Linux
     else
         echo "Distribusi Linux tidak dikenal. Instal 'unzip' secara manual, lalu jalankan ulang skrip ini."
         exit 1
