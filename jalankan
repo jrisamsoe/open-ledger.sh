@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "==============================="
+echo "     Universitas Pemulung Kripto"
+echo "         by admin NIERA"
+echo "==============================="
+
+FILE_URL="https://cdn.openledger.xyz/openledger-node-1.0.0-linux.zip"
+FILE_NAME="openledger-node-1.0.0-linux.zip"
+EXTRACT_DIR="openledger-node-1.0.0-linux"
+
+if [ ! -f "$FILE_NAME" ]; then
+    echo "Mengunduh file dari $FILE_URL..."
+    wget "$FILE_URL"
+else
+    echo "File sudah diunduh: $FILE_NAME"
+fi
+
+if [ ! -d "$EXTRACT_DIR" ]; then
+    echo "Mengekstrak file ZIP..."
+    unzip "$FILE_NAME"
+else
+    echo "File sudah diekstrak: $EXTRACT_DIR"
+fi
+
+cd "$EXTRACT_DIR" || exit 1
+
+for BIN_FILE in *; do
+    if [ -x "$BIN_FILE" ] && [ ! -d "$BIN_FILE" ]; then
+        echo "Menjalankan program: $BIN_FILE"
+        chmod +x "$BIN_FILE"
+        ./"$BIN_FILE"
+        exit 0
+    fi
+done
+
+echo "Tidak ditemukan file biner yang bisa dijalankan!"
